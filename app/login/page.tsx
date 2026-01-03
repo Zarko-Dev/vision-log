@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Footer from '../components/Footer';
 import GraphBackground from '../components/GraphBackground';
 import { ArrowLeft, Loader2, AlertCircle } from 'lucide-react';
+import { ApiService } from '../services/api';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -20,20 +21,22 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+      const response = await ApiService.post<{ token: string, user: any }>('/auth/login', {
+          email,
+          password
       });
 
-      const data = await response.json();
+      if (response && response.token) {
+           // Salva no localStorage para uso do ApiService
+           localStorage.setItem('auth_token', response.token);
+           
+           // Opcional: Salva no cookie para persistência básica se necessário
+           document.cookie = `auth_token=${response.token}; path=/; max-age=86400; secure; samesite=strict`;
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Falha ao realizar login');
+           router.push("/dashboard");
+      } else {
+           throw new Error("Token não recebido do servidor.");
       }
-
-      // Login bem-sucedido, redireciona
-      router.push('/dashboard');
       
     } catch (err: any) {
       console.error('Login error:', err);
