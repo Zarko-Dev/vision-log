@@ -32,10 +32,16 @@ export default function LoginPage() {
                <p className="text-neutral-500 dark:text-purple-200/60 text-sm">Insira suas credenciais para acessar o workspace.</p>
             </div>
 
-            <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+            <form className="space-y-4" onSubmit={(e) => {
+              e.preventDefault();
+              // Mock Login
+              document.cookie = "auth_token=mock_user_token; path=/; max-age=86400";
+              window.location.href = "/dashboard";
+            }}>
                 <div>
                     <input 
                         type="email" 
+                        defaultValue="mock@visionlog.ai"
                         className="w-full px-5 py-3 rounded-xl bg-neutral-50 dark:bg-black/40 border border-neutral-200 dark:border-purple-500/30 focus:border-black dark:focus:border-purple-400 focus:ring-1 focus:ring-black dark:focus:ring-purple-400 outline-none transition-all text-sm dark:text-white dark:placeholder-purple-300/30"
                         placeholder="Email corporativo"
                     />
@@ -43,13 +49,14 @@ export default function LoginPage() {
                 <div>
                     <input 
                         type="password" 
+                        defaultValue="password"
                         className="w-full px-5 py-3 rounded-xl bg-neutral-50 dark:bg-black/40 border border-neutral-200 dark:border-purple-500/30 focus:border-black dark:focus:border-purple-400 focus:ring-1 focus:ring-black dark:focus:ring-purple-400 outline-none transition-all text-sm dark:text-white dark:placeholder-purple-300/30"
                         placeholder="Senha"
                     />
                 </div>
                 
-                <button className="w-full bg-black dark:bg-purple-600 text-white font-medium py-3 rounded-xl hover:bg-neutral-800 dark:hover:bg-purple-500 transition-transform active:scale-95 shadow-lg shadow-neutral-900/10 dark:shadow-purple-900/50">
-                    Entrar
+                <button type="submit" className="w-full bg-black dark:bg-purple-600 text-white font-medium py-3 rounded-xl hover:bg-neutral-800 dark:hover:bg-purple-500 transition-transform active:scale-95 shadow-lg shadow-neutral-900/10 dark:shadow-purple-900/50">
+                    Entrar (Mock User)
                 </button>
             </form>
 
