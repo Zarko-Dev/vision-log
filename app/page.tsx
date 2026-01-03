@@ -1,65 +1,70 @@
 import Image from "next/image";
+import TypewriterSlogan from "./components/TypewriterSlogan";
+import Footer from "./components/Footer";
+
+import Navbar from "./components/Navbar";
+import GraphBackground from "./components/GraphBackground";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen flex flex-col items-center gap-8 relative overflow-hidden">
+      <GraphBackground />
+      {/* Floating Navbar */}
+      <Navbar />
+
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col items-center w-full max-w-5xl pt-32 z-10">
+        
+        {/* Graph Container */}
+        <div className="relative w-full h-[300px] md:h-[500px]">
+          
+          {/* SVG Connector Layer */}
+          <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+            {/* Connections */}
+            <g className="stroke-black/80 dark:stroke-purple-500/80 stroke-[0.3] [stroke-dasharray:1,1]">
+              <path d="M20 50 L50 25" /> {/* Office -> Shed */}
+              <path d="M50 25 L85 55" /> {/* Shed -> Field */}
+              <path d="M20 50 L10 80" /> {/* Office -> Child 1 */}
+              <path d="M20 50 L20 80" /> {/* Office -> Child 2 */}
+              <path d="M20 50 L30 80" /> {/* Office -> Child 3 */}
+            </g>
+          </svg>
+
+          {/* Nodes Layer */}
+          
+          {/* Node: Office (Left) */}
+          <div className="absolute top-[50%] left-[20%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3">
+            <span className="text-sm font-medium text-black dark:text-purple-200">Office</span>
+            <div className="w-12 h-12 bg-[#1C1C1E] dark:bg-purple-600 dark:shadow-[0_0_15px_rgba(168,85,247,0.5)] rounded-full shadow-lg transition-transform hover:scale-110"></div>
+          </div>
+
+          {/* Node: Shed 1 (Top Center) */}
+          <div className="absolute top-[25%] left-[50%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3">
+            <span className="text-sm font-medium text-black dark:text-purple-200">Shed 1</span>
+            <div className="w-12 h-12 bg-[#1C1C1E] dark:bg-purple-600 dark:shadow-[0_0_15px_rgba(168,85,247,0.5)] rounded-full shadow-lg transition-transform hover:scale-110"></div>
+          </div>
+
+          {/* Node: Field (Right) */}
+          <div className="absolute top-[55%] left-[85%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3">
+            <span className="text-sm font-medium text-black dark:text-purple-200">Field</span>
+            <div className="w-12 h-12 bg-[#1C1C1E] dark:bg-purple-600 dark:shadow-[0_0_15px_rgba(168,85,247,0.5)] rounded-full shadow-lg transition-transform hover:scale-110"></div>
+          </div>
+
+          {/* Child Nodes (Below Office) */}
+          <div className="absolute top-[80%] left-[10%] -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-[#1C1C1E] dark:bg-purple-600 dark:shadow-[0_0_10px_rgba(168,85,247,0.5)] rounded-full shadow-md hover:scale-110 transition-transform"></div>
+          <div className="absolute top-[80%] left-[20%] -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-[#1C1C1E] dark:bg-purple-600 dark:shadow-[0_0_10px_rgba(168,85,247,0.5)] rounded-full shadow-md hover:scale-110 transition-transform"></div>
+          <div className="absolute top-[80%] left-[30%] -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-[#1C1C1E] dark:bg-purple-600 dark:shadow-[0_0_10px_rgba(168,85,247,0.5)] rounded-full shadow-md hover:scale-110 transition-transform"></div>
+
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+
+        {/* Animated Slogan */}
+        <TypewriterSlogan />
+
       </main>
+
+      {/* Footer */}
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

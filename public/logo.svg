@@ -1,0 +1,23 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Forma tipo tetraedro - 4 vértices: 1 no topo, 3 na base -->
+  <circle cx="16" cy="10" r="1.5" fill="#9333EA"/>
+  <circle cx="10" cy="20" r="1.5" fill="#9333EA"/>
+  <circle cx="22" cy="20" r="1.5" fill="#9333EA"/>
+  <circle cx="16" cy="24" r="1.5" fill="#9333EA"/>
+  
+  <!-- Linhas conectando os vértices formando um tetraedro -->
+  <!-- Topo para os 3 da base -->
+  <line x1="16" y1="10" x2="10" y2="20" stroke="#9333EA" strokeWidth="1.5" strokeLinecap="round"/>
+  <line x1="16" y1="10" x2="22" y2="20" stroke="#9333EA" strokeWidth="1.5" strokeLinecap="round"/>
+  <line x1="16" y1="10" x2="16" y2="24" stroke="#9333EA" strokeWidth="1.5" strokeLinecap="round"/>
+  <!-- Base triangular -->
+  <line x1="10" y1="20" x2="22" y2="20" stroke="#9333EA" strokeWidth="1.5" strokeLinecap="round"/>
+  <line x1="10" y1="20" x2="16" y2="24" stroke="#9333EA" strokeWidth="1.5" strokeLinecap="round"/>
+  <line x1="22" y1="20" x2="16" y2="24" stroke="#9333EA" strokeWidth="1.5" strokeLinecap="round"/>
+  
+  <!-- 4 colchetes nos cantos -->
+  <path d="M 6 6 L 6 10 L 10 10" stroke="#9333EA" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+  <path d="M 26 6 L 26 10 L 22 10" stroke="#9333EA" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+  <path d="M 6 26 L 6 22 L 10 22" stroke="#9333EA" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+  <path d="M 26 26 L 26 22 L 22 22" stroke="#9333EA" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+</svg>
