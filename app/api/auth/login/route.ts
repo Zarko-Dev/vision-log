@@ -15,15 +15,18 @@ export async function POST(request: NextRequest) {
 
         // Realiza o login no backend
         // Assumindo que o backend retorna { token: string, user: ... } ou similar
-        const loginResponse = await ApiService.post<{ token: string, user?: any }>('/login', {
+        const loginResponse = await ApiService.post<{ token: string, user?: any, message?: string }>('/auth/login', {
             email,
             password
         });
+        
+        console.log('Resposta do login:', loginResponse ? 'Sucesso' : 'Vazio');
 
         if (!loginResponse || !loginResponse.token) {
             console.error('Resposta de login inválida:', loginResponse);
+            const errorMessage = loginResponse?.message || 'Falha na autenticação';
             return NextResponse.json(
-                { error: 'Falha na autenticação' },
+                { error: errorMessage },
                 { status: 401 }
             );
         }
