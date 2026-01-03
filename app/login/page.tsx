@@ -56,7 +56,7 @@ export default function LoginPage() {
                 </div>
                 
                 <button type="submit" className="w-full bg-black dark:bg-purple-600 text-white font-medium py-3 rounded-xl hover:bg-neutral-800 dark:hover:bg-purple-500 transition-transform active:scale-95 shadow-lg shadow-neutral-900/10 dark:shadow-purple-900/50">
-                    Entrar (Mock User)
+                    Entrar
                 </button>
             </form>
 
