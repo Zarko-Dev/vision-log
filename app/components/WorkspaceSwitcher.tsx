@@ -1,12 +1,7 @@
 "use client";
 import React, { useState } from 'react';
-import { ChevronDown, Check, Building2, Warehouse, Container } from 'lucide-react';
-
-const workspaces = [
-    { id: 'galpao-a', name: 'Galpão A', icon: Warehouse },
-    { id: 'garagem', name: 'Garagem', icon: Container },
-    { id: 'headquarters', name: 'Headquarters', icon: Building2 },
-];
+import { ChevronDown, Check } from 'lucide-react';
+import { workspaces } from '../data/workspaces';
 
 export default function WorkspaceSwitcher() {
     const [isOpen, setIsOpen] = useState(false);
@@ -21,17 +16,20 @@ export default function WorkspaceSwitcher() {
                 <div className="w-6 h-6 bg-black dark:bg-purple-600 rounded-md flex items-center justify-center text-white">
                     <selected.icon className="w-3.5 h-3.5" />
                 </div>
-                <span className="text-sm font-medium text-neutral-700 dark:text-neutral-200">{selected.name}</span>
+                <span className="text-sm font-medium text-neutral-700 dark:text-neutral-200 hidden sm:inline">{selected.name}</span>
                 <ChevronDown className={`w-4 h-4 text-neutral-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
             </button>
 
             {isOpen && (
                 <>
+                    {/* Backdrop for closing (Invisible) */}
                     <div 
                         className="fixed inset-0 z-40" 
                         onClick={() => setIsOpen(false)}
                     />
-                    <div className="absolute top-full left-0 mt-2 w-56 bg-white dark:bg-[#1C1C1E] border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-xl z-50 overflow-hidden py-1">
+
+                    {/* Dropdown Container (Mobile & Desktop) */}
+                    <div className="absolute top-full left-0 mt-2 w-[calc(100vw-2rem)] max-w-[280px] sm:w-64 bg-white dark:bg-[#1C1C1E] border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-xl z-50 overflow-hidden py-1 animate-in slide-in-from-top-2 duration-200">
                         <div className="px-3 py-2 border-b border-neutral-100 dark:border-neutral-800 mb-1">
                             <span className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Workspaces</span>
                         </div>
@@ -42,7 +40,7 @@ export default function WorkspaceSwitcher() {
                                     setSelected(ws);
                                     setIsOpen(false);
                                 }}
-                                className="w-full flex items-center gap-3 px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+                                className="w-full flex items-center gap-3 px-3 py-3 sm:py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
                             >
                                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${selected.id === ws.id ? 'bg-black text-white dark:bg-purple-600' : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400'}`}>
                                     <ws.icon className="w-4 h-4" />

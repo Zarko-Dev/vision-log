@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { ApiService } from '@/app/services/api';
 
 interface NodePositionUpdate {
   x: number;
@@ -11,6 +12,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const token = request.cookies.get('auth_token')?.value;
     const { id: nodeId } = await params;
     const body: NodePositionUpdate = await request.json();
 
@@ -22,31 +24,33 @@ export async function PATCH(
       );
     }
 
-    // Aqui você integraria com seu backend Node.js
-    // Por enquanto, apenas retornamos sucesso
-    // Em produção, você faria algo como:
-    // const response = await fetch(`http://seu-backend-nodejs/api/nodes/${nodeId}`, {
-    //   method: 'PATCH',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ x: body.x, y: body.y, parentId: body.parentId }),
-    // });
+    // Proxy para o backend real usando ApiService
+    try {
+        const headers: Record<string, string> = {};
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
 
-    console.log(`Atualizando nó ${nodeId} com posição:`, {
-      x: body.x,
-      y: body.y,
-      parentId: body.parentId,
-    });
+        const result = await ApiService.patch(`/nodes/${nodeId}`, {
+            x: body.x,
+            y: body.y,
+            parentId: body.parentId
+        }, { headers } as any);
 
-    return NextResponse.json({
-      success: true,
-      nodeId,
-      position: { x: body.x, y: body.y },
-      parentId: body.parentId,
-    });
+        return NextResponse.json(result || { success: true });
+    } catch (apiError) {
+        console.error(`Erro na API externa para nó ${nodeId}:`, apiError);
+        // Fallkback ou erro
+        return NextResponse.json(
+            { error: 'Falha ao comunicar com o backend de visão' },
+            { status: 502 }
+        );
+    }
+
   } catch (error) {
-    console.error('Erro ao atualizar posição do nó:', error);
+    console.error('Erro ao processar requisição de atualização do nó:', error);
     return NextResponse.json(
-      { error: 'Erro ao atualizar posição do nó' },
+      { error: 'Erro interno ao processar requisição' },
       { status: 500 }
     );
   }

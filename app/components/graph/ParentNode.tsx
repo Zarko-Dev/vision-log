@@ -13,22 +13,25 @@ export interface ParentNodeData extends Record<string, unknown> {
 export default function ParentNode(props: NodeProps) {
   const data = props.data as ParentNodeData;
   return (
-    <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-lg border-2 border-neutral-200 dark:border-purple-600/50 p-4 min-w-[200px] min-h-[120px] flex flex-col items-center justify-center gap-2 hover:shadow-xl transition-shadow">
+    <div className="group flex flex-col items-center relative">
       <Handle
         type="target"
         position={Position.Top}
-        className="w-3 h-3 bg-purple-500"
+        className="w-3 h-3 bg-purple-500 top-0"
       />
-      <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
+      
+      <div className="w-20 h-20 bg-white dark:bg-neutral-900 rounded-full shadow-lg border-2 border-neutral-200 dark:border-purple-600/50 flex items-center justify-center hover:scale-110 hover:shadow-xl hover:border-purple-500 transition-all duration-300 relative z-10">
         <Building2 className="w-8 h-8 text-purple-600 dark:text-purple-400" />
       </div>
-      <span className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 text-center">
+      
+      <span className="mt-2 text-xs font-bold text-neutral-600 dark:text-neutral-300 bg-white/50 dark:bg-black/50 px-2 py-0.5 rounded-full backdrop-blur-sm">
         {data.label}
       </span>
+
       <Handle
         type="source"
         position={Position.Bottom}
-        className="w-3 h-3 bg-purple-500"
+        className="w-3 h-3 bg-purple-500 bottom-8"
       />
     </div>
   );

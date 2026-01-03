@@ -1,61 +1,62 @@
-"use client";
-
 import React from 'react';
 import GraphView from '../components/graph/GraphView';
-import { Node, Edge } from '@xyflow/react';
+import { Node, Edge, MarkerType } from '@xyflow/react';
+import { ApiService } from '../services/api';
+import { workspaces } from '../data/workspaces';
 
-// Dados de exemplo para o gráfico
-const initialNodes: Node[] = [
-  {
-    id: 'parent-1',
-    type: 'parent',
-    position: { x: 250, y: 100 },
-    data: {
-      type: 'parent',
-      label: 'Escritório',
-    },
-  },
-  {
-    id: 'category-1',
-    type: 'category',
-    position: { x: 100, y: 300 },
-    data: {
-      type: 'category',
-      label: 'Ferramentas',
-      color: 'bg-blue-500',
-    },
-  },
-  {
-    id: 'item-1',
-    type: 'item',
-    position: { x: 500, y: 300 },
-    data: {
-      type: 'item',
-      label: 'Chave de Fenda',
-      quantity: 5,
-    },
-  },
-  {
-    id: 'item-2',
-    type: 'item',
-    position: { x: 650, y: 300 },
-    data: {
-      type: 'item',
-      label: 'Martelo',
-      quantity: 3,
-    },
-  },
-];
+// Função para buscar nós da API
+async function getNodes(): Promise<Node[]> {
+    try {
+        const nodes = await ApiService.get<Node[]>('/nodes');
+        if (Array.isArray(nodes) && nodes.length > 0) {
+            return nodes;
+        }
+    } catch (error) {
+        console.error('Failed to fetch nodes form API, using fallback:', error);
+    }
+    
+    // Fallback para dados estáticos se a API falhar ou não retornar nada
+    // Converte os dados dos workspaces em Nodes
+    return workspaces.map((ws, index) => {
+        // Posição fixa relativa (o fitView do ReactFlow vai centralizar tudo)
+        const isHQ = ws.id === 'headquarters';
+        const x = isHQ ? 0 : (index * 350) - 350; // Centraliza e espalha
+        const y = isHQ ? 0 : 300;
 
-const initialEdges: Edge[] = [];
+        return {
+            id: ws.id,
+            type: 'parent', // Usando o tipo 'parent' já existente para consistência visual
+            position: { x, y },
+            data: {
+                label: ws.name,
+                type: 'parent',
+            },
+        };
+    });
+}
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+    const initialNodes = await getNodes();
+
+    // Cria conexões (exemplo simples: todos ligados ao Headquarters se existirem)
+    // Nota: Em um cenário real, as arestas (edges) também viriam da API ou seriam inferidas
+    const initialEdges: Edge[] = initialNodes
+        .filter(n => n.id !== 'headquarters')
+        .map(n => ({
+            id: `e-headquarters-${n.id}`,
+            source: 'headquarters',
+            target: n.id,
+            animated: true,
+            style: { stroke: '#9333ea' }, // Roxo
+            markerEnd: { type: MarkerType.ArrowClosed, color: '#9333ea' },
+        }));
+
     return (
         <div className="w-full h-full relative">
             {/* Overlay header */}
-            <div className="absolute top-6 left-6 z-20 pointer-events-none">
-                <h1 className="text-3xl font-bold text-neutral-900 dark:text-white mb-2">Explorar</h1>
-                <p className="text-neutral-500 dark:text-gray-400">Visualização de Rede em Tempo Real</p>
+            <div className="absolute top-24 md:top-6 left-6 z-20 pointer-events-none">
+                
+                
             </div>
 
             {/* Graph View */}
@@ -63,3 +64,4 @@ export default function DashboardPage() {
         </div>
     );
 }
+

@@ -1,12 +1,48 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Footer from '../components/Footer';
 import GraphBackground from '../components/GraphBackground';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Loader2, AlertCircle } from 'lucide-react';
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Falha ao realizar login');
+      }
+
+      // Login bem-sucedido, redireciona
+      router.push('/dashboard');
+      
+    } catch (err: any) {
+      console.error('Login error:', err);
+      setError(err.message || 'Ocorreu um erro ao tentar entrar.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-black flex flex-col font-sans text-neutral-900 dark:text-purple-100 relative overflow-hidden">
       
@@ -32,16 +68,20 @@ export default function LoginPage() {
                <p className="text-neutral-500 dark:text-purple-200/60 text-sm">Insira suas credenciais para acessar o workspace.</p>
             </div>
 
-            <form className="space-y-4" onSubmit={(e) => {
-              e.preventDefault();
-              // Mock Login
-              document.cookie = "auth_token=mock_user_token; path=/; max-age=86400";
-              window.location.href = "/dashboard";
-            }}>
+            <form className="space-y-4" onSubmit={handleSubmit}>
+                {error && (
+                    <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-xs text-red-600 dark:text-red-400 flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4 text-red-500" />
+                        {error}
+                    </div>
+                )}
+
                 <div>
                     <input 
                         type="email" 
-                        defaultValue="mock@visionlog.ai"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
                         className="w-full px-5 py-3 rounded-xl bg-neutral-50 dark:bg-black/40 border border-neutral-200 dark:border-purple-500/30 focus:border-black dark:focus:border-purple-400 focus:ring-1 focus:ring-black dark:focus:ring-purple-400 outline-none transition-all text-sm dark:text-white dark:placeholder-purple-300/30"
                         placeholder="Email corporativo"
                     />
@@ -49,14 +89,20 @@ export default function LoginPage() {
                 <div>
                     <input 
                         type="password" 
-                        defaultValue="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
                         className="w-full px-5 py-3 rounded-xl bg-neutral-50 dark:bg-black/40 border border-neutral-200 dark:border-purple-500/30 focus:border-black dark:focus:border-purple-400 focus:ring-1 focus:ring-black dark:focus:ring-purple-400 outline-none transition-all text-sm dark:text-white dark:placeholder-purple-300/30"
                         placeholder="Senha"
                     />
                 </div>
                 
-                <button type="submit" className="w-full bg-black dark:bg-purple-600 text-white font-medium py-3 rounded-xl hover:bg-neutral-800 dark:hover:bg-purple-500 transition-transform active:scale-95 shadow-lg shadow-neutral-900/10 dark:shadow-purple-900/50">
-                    Entrar
+                <button 
+                    type="submit" 
+                    disabled={loading}
+                    className="w-full bg-black dark:bg-purple-600 text-white font-medium py-3 rounded-xl hover:bg-neutral-800 dark:hover:bg-purple-500 transition-all active:scale-95 shadow-lg shadow-neutral-900/10 dark:shadow-purple-900/50 flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
+                >
+                    {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Entrar'}
                 </button>
             </form>
 
@@ -71,3 +117,4 @@ export default function LoginPage() {
     </div>
   );
 }
+
