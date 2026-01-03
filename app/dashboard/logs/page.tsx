@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Terminal, Clock, AlertCircle } from 'lucide-react';
+import { ApiService } from '@/app/services/api';
 
 interface LogEntry {
     id: string;
@@ -19,11 +20,9 @@ export default function LogsPage() {
     useEffect(() => {
         const fetchLogs = async () => {
             try {
-                const response = await fetch('/api/logs');
-                if (!response.ok) {
-                    throw new Error('Falha ao carregar logs');
-                }
-                const data = await response.json();
+                // ApiService já pega o token do localStorage
+                const data = await ApiService.get<LogEntry[]>('/logs');
+                
                 // Assumindo que a API retorna um array, se retornar objeto com data, ajustar aqui
                 if (Array.isArray(data)) {
                     setLogs(data);

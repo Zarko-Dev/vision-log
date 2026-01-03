@@ -1,14 +1,28 @@
-const API_URL = process.env.API_URL || 'https://ill-brena-vision-api-0310c5e9.koyeb.app';
+// Função auxiliar para pegar o token (pode ser ajustada para cookie se preferir)
+function getAuthToken(): string | null {
+  if (typeof window !== 'undefined') {
+    // Tenta pegar do localStorage ou document.cookie se você estiver salvando lá
+    return localStorage.getItem('auth_token'); 
+  }
+  return null;
+}
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://ill-brena-vision-api-0310c5e9.koyeb.app';
 
 export class ApiService {
   private static async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${API_URL}${endpoint}`;
     
-    // Configura headers padrão
+    const token = getAuthToken();
+
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       ...options.headers as Record<string, string>,
     };
+
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
 
     try {
       const response = await fetch(url, {
@@ -17,7 +31,17 @@ export class ApiService {
       });
 
       if (!response.ok) {
-        throw new Error(`API Error: ${response.status} ${response.statusText}`);
+        // Tenta ler o erro do corpo da resposta, se houver
+        let errorMessage = `API Error: ${response.status} ${response.statusText}`;
+        try {
+            const errorBody = await response.json();
+            if (errorBody.message) {
+                errorMessage = errorBody.message;
+            }
+        } catch (e) {
+            // Ignora erro de parse se não for JSON
+        }
+        throw new Error(errorMessage);
       }
 
       // Se a resposta for vazia (ex: 204 No Content), retorna null
