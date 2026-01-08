@@ -16,10 +16,21 @@ export default function DashboardPage() {
         const loadData = async () => {
             try {
                 // Tenta carregar os nós da API
-                const nodes = await ApiService.get<Node[]>('/nodes');
+                const rawNodes = await ApiService.get<any[]>('/nodes');
                 
-                if (Array.isArray(nodes) && nodes.length > 0) {
-                    setInitialNodes(nodes);
+                if (Array.isArray(rawNodes) && rawNodes.length > 0) {
+                     const mappedNodes: Node[] = rawNodes.map(node => ({
+                        id: node.id,
+                        type: node.type || 'parent',
+                        position: { x: node.x || 0, y: node.y || 0 },
+                        data: { 
+                            label: node.label || 'Sem Nome', 
+                            type: node.type || 'parent',
+                            parentId: node.parentId 
+                        },
+                        parentId: node.parentId || undefined,
+                    }));
+                    setInitialNodes(mappedNodes);
                 } else {
                      // Fallback para dados estáticos
                      const staticNodes = workspaces.map((ws, index) => {
