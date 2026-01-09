@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import GraphView from '../components/graph/GraphView';
 import { Node, Edge, MarkerType } from '@xyflow/react';
 import { ApiService } from '../services/api';
-import { workspaces } from '../data/workspaces';
 import { useRouter } from 'next/navigation';
 
 export default function DashboardPage() {
@@ -31,39 +30,9 @@ export default function DashboardPage() {
                         parentId: node.parentId || undefined,
                     }));
                     setInitialNodes(mappedNodes);
-                } else {
-                     // Fallback para dados estáticos
-                     const staticNodes = workspaces.map((ws, index) => {
-                        const isHQ = ws.id === 'headquarters';
-                        const x = isHQ ? 0 : (index * 350) - 350;
-                        const y = isHQ ? 0 : 300;
-                        return {
-                            id: ws.id,
-                            type: 'parent',
-                            position: { x, y },
-                            data: { label: ws.name, type: 'parent' },
-                        };
-                    });
-                     setInitialNodes(staticNodes);
                 }
             } catch (error) {
                 console.error('Failed to fetch data:', error);
-                
-                // Em caso de erro (ex: 401), pode redirecionar para login ou usar fallback
-                // Por enquanto, usamos fallback para não quebrar a UI
-                const staticNodes = workspaces.map((ws, index) => {
-                    const isHQ = ws.id === 'headquarters';
-                    const x = isHQ ? 0 : (index * 350) - 350;
-                    const y = isHQ ? 0 : 300;
-                    return {
-                        id: ws.id,
-                        type: 'parent',
-                        position: { x, y },
-                        data: { label: ws.name, type: 'parent' },
-                    };
-                });
-                setInitialNodes(staticNodes);
-
             } finally {
                 setLoading(false);
             }
@@ -72,17 +41,8 @@ export default function DashboardPage() {
         loadData();
     }, [router]);
 
-    // Cria conexões (exemplo simples: todos ligados ao Headquarters se existirem)
-    const initialEdges: Edge[] = initialNodes
-        .filter(n => n.id !== 'headquarters')
-        .map(n => ({
-            id: `e-headquarters-${n.id}`,
-            source: 'headquarters',
-            target: n.id,
-            animated: true,
-            style: { stroke: '#9333ea' }, // Roxo
-            markerEnd: { type: MarkerType.ArrowClosed, color: '#9333ea' },
-        }));
+    // Cria conexões (pode ser expandido futuramente baseada em parentId)
+    const initialEdges: Edge[] = [];
 
     if (loading) {
          return (

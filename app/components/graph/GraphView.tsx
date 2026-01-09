@@ -21,6 +21,7 @@ import { nodeTypes } from './nodeTypes';
 import { ParentNodeData } from './ParentNode';
 import { CategoryNodeData } from './CategoryNode';
 import { ItemNodeData } from './ItemNode';
+import { ApiService } from '../../services/api';
 
 type GraphNodeData = ParentNodeData | CategoryNodeData | ItemNodeData;
 
@@ -77,17 +78,7 @@ function GraphContent({ initialNodes = [], initialEdges = [] }: GraphViewProps) 
   // Função para atualizar a posição no backend
   const updateNodePosition = useCallback(async (nodeId: string, x: number, y: number, parentId?: string) => {
     try {
-      const response = await fetch(`/api/nodes/${nodeId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ x, y, parentId }),
-      });
-
-      if (!response.ok) {
-        console.error('Erro ao salvar posição do nó:', await response.text());
-      }
+      await ApiService.patch(`/nodes/${nodeId}`, { x, y, parentId });
     } catch (error) {
       console.error('Erro ao atualizar posição do nó:', error);
     }
@@ -193,12 +184,10 @@ function GraphContent({ initialNodes = [], initialEdges = [] }: GraphViewProps) 
      setIsModalOpen(true);
   }, []);
 
-  const handleCreateNode = useCallback((e?: React.FormEvent) => {
+  const handleCreateNode = useCallback(async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!nodeName.trim()) return;
 
-    const id = `node-${Date.now()}`;
-    
     // Se for o primeiro nó, centraliza em (0,0), senão usa o centro da tela
     let position = { x: 0, y: 0 };
     
@@ -210,24 +199,42 @@ function GraphContent({ initialNodes = [], initialEdges = [] }: GraphViewProps) 
         position = { x: center.x - 100, y: center.y - 60 };
     }
 
-    const newNode: Node = {
-      id,
-      type: 'parent',
-      position,
-      data: { 
-        label: nodeName,
-        type: 'parent' 
-      },
-    };
-    
-    setNodes((nds) => [...nds, newNode]);
-    setIsModalOpen(false);
-    setNodeName('');
+    const id = `node-${Date.now()}`;
 
-    // Foca no novo nó
-    setTimeout(() => {
-        fitView({ nodes: [{ id }], duration: 800, padding: 0.5 });
-    }, 100);
+    const payload = {
+        id,
+        label: nodeName,
+        type: 'parent',
+        x: Math.round(position.x),
+        y: Math.round(position.y)
+    };
+
+    try {
+        const createdNode = await ApiService.post<any>('/nodes', payload);
+        
+        const newNode: Node = {
+          id: createdNode.id,
+          type: createdNode.type || 'parent',
+          position: { x: createdNode.x, y: createdNode.y },
+          data: { 
+            label: createdNode.label,
+            type: createdNode.type || 'parent' 
+          },
+        };
+        
+        setNodes((nds) => [...nds, newNode]);
+        setIsModalOpen(false);
+        setNodeName('');
+
+        // Foca no novo nó
+        setTimeout(() => {
+            fitView({ nodes: [{ id: newNode.id }], duration: 800, padding: 0.5 });
+        }, 100);
+
+    } catch (error) {
+        console.error('Erro ao criar nó:', error);
+        // Aqui você poderia adicionar uma notificação de erro para o usuário
+    }
   }, [nodeName, nodes.length, setNodes, screenToFlowPosition, fitView]);
 
   return (
