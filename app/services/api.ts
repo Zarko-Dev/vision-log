@@ -7,11 +7,18 @@ function getAuthToken(): string | null {
   return null;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://ill-brena-vision-api-0310c5e9.koyeb.app';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
 
 export class ApiService {
   private static async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    const url = `${API_URL}${endpoint}`;
+    // Remove trailing slash from base if exists
+    const baseUrl = API_URL.replace(/\/$/, '');
+    // Remove leading slash from endpoint if exists
+    const cleanEndpoint = endpoint.replace(/^\//, '');
+    
+    const url = `${baseUrl}/${cleanEndpoint}`;
+    
+    console.log(`[ApiService] Requesting: ${url}`);
     
     const token = getAuthToken();
 
